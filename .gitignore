@@ -1,0 +1,6 @@
+# ignore chart dependencies
+/charts
+# ignore generated charts
+camel-dashboard-all-*
+# ignore lock
+Chart.lock
