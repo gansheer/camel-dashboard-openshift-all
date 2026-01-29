@@ -1,4 +1,14 @@
-# Camel Dashboard All-in-One Helm Chart
+<h1 align="center">
+  <a href="https://camel-tooling.github.io/camel-dashboard/">Camel Dashboard Openshift Helm Chart</a>
+</h1>
+
+<p align=center>
+  <a href="https://github.com/camel-tooling/camel-dashboard/blob/main/LICENSE"><img src="https://img.shields.io/github/license/camel-tooling/camel-dashboard-operator?color=104d92&style=for-the-badge" alt="License"/></a>
+  <a href="https://camel-tooling.github.io/camel-dashboard/"><img src="https://img.shields.io/badge/Documentation-Camel_Dashboard-white?color=cf7428&style=for-the-badge" alt="Visit"/></a>
+</p><br/>
+
+<h2 align="center">Camel Dashboard All-in-One Helm Chart for Openshift</h2>
+
 
 This is an umbrella Helm chart that deploys the complete Camel Dashboard solution, including:
 - **Camel Dashboard Operator**: Manages Camel Dashboard instances
