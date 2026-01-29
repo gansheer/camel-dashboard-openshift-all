@@ -21,3 +21,6 @@
 .vscode/
 # Chart build artifacts
 # Note: Do NOT ignore charts/*.tgz as they contain our dependencies
+Makefile
+README.md
+camel-dashboard-openshift-all-*

@@ -23,12 +23,12 @@ helm repo update
 ### 2. Install the Chart
 
 ```bash
-helm install camel-dashboard-all camel-dashboard/camel-dashboard-all -n camel-dashboard --create-namespace
+helm install camel-dashboard-openshift-all camel-dashboard/camel-dashboard-openshift-all -n camel-dashboard --create-namespace
 ```
 ### 2. Install the Chart
 
 ```bash
-helm install camel-dashboard-all camel-dashboard/camel-dashboard-all -n camel-dashboard --create-namespace
+helm install camel-dashboard-openshift-all camel-dashboard/camel-dashboard-openshift-all -n camel-dashboard --create-namespace
 ```
 
 ### 3. Customizing Installation
@@ -36,13 +36,13 @@ helm install camel-dashboard-all camel-dashboard/camel-dashboard-all -n camel-da
 You can customize the installation by providing your own values:
 
 ```bash
-helm install camel-dashboard-all camel-dashboard/camel-dashboard-all -n camel-dashboard --create-namespace -f my-values.yaml
+helm install camel-dashboard-openshift-all camel-dashboard/camel-dashboard-openshift-all -n camel-dashboard --create-namespace -f my-values.yaml
 ```
 
 ## Uninstalling
 
 ```bash
-helm uninstall camel-dashboard-all -n camel-dashboard
+helm uninstall camel-dashboard-openshift-all -n camel-dashboard
 ```
 
 

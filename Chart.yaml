@@ -1,9 +1,8 @@
 apiVersion: v2
-name: camel-dashboard-all
+name: camel-dashboard-openshift-all
 description: Helm umbrella chart for Camel Dashboard on OpenShift
 type: application
 version: 4.19.0
-appVersion: 4.19.0
 icon: https://camel-tooling.github.io/camel-dashboard/favicons/android-192x192.png
 home: https://camel-tooling.github.io/camel-dashboard/
 sources:
