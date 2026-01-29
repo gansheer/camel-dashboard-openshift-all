@@ -7,6 +7,9 @@
   <a href="https://camel-tooling.github.io/camel-dashboard/"><img src="https://img.shields.io/badge/Documentation-Camel_Dashboard-white?color=cf7428&style=for-the-badge" alt="Visit"/></a>
 </p><br/>
 
+> [!WARNING] 
+> This Helm chart is a work in progress
+
 <h2 align="center">Camel Dashboard All-in-One Helm Chart for Openshift</h2>
 
 
