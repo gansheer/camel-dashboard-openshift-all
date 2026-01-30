@@ -20,8 +20,8 @@ hawtio-online-console-plugin:
   plugin:
     image:
       name: quay.io/hawtio/online-console-plugin
-      tag: 0.6.2
+      tag: 0.6.0
   gateway:
     image:
       name: quay.io/hawtio/online-console-plugin-gateway
-      tag: 0.6.2
+      tag: 0.6.0

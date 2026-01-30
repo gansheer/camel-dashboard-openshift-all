@@ -35,6 +35,6 @@ dependencies:
     repository: "https://camel-tooling.github.io/camel-dashboard/charts"
     condition: camel-dashboard-console.enabled
   - name: hawtio-online-console-plugin
-    version: "0.6.1"
+    version: "0.6.2"
     repository: "https://hawtio.github.io/hawtio-charts"
     condition: hawtio-online-console-plugin.enabled
