@@ -1,0 +1,36 @@
+name: Build
+
+on:
+  pull_request:
+    branches:
+      - "main"
+      - "release-*"
+  push:
+    branches:
+      - "main"
+      - "release-*"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4.3.0
+      
+      - name: Check charts
+        shell: bash
+        run: |
+          make helm-check
+
+      - name: Build charts
+        shell: bash
+        run: |
+          make helm-release

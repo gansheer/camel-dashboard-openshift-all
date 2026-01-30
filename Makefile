@@ -29,6 +29,23 @@ endif
 
 #---
 #
+#@ helm-check
+#
+#== Check the helm chart
+#
+#=== Calls: helm
+#
+#
+#---
+helm-check: helm
+	@echo "####### Checking helm chart ..."
+	helm dependency update
+	helm lint . --set hawtio-online-console-plugin.enabled=false
+
+.PHONY: helm-check
+
+#---
+#
 #@ helm-release
 #
 #== Release helm chart
@@ -41,6 +58,7 @@ helm-release: helm
 	@echo "####### Building helm chart ..."
 	helm dependency update
 	helm package .
+
 
 .PHONY: helm-release
 
