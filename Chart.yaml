@@ -4,7 +4,7 @@ description: Helm umbrella chart for Camel Dashboard on OpenShift
 type: application
 version: 4.19.0
 # to change before releasing
-icon: https://raw.githubusercontent.com/camel-tooling/camel-dashboard-openshift-all/refs/heads/main/logo.png
+icon: https://raw.githubusercontent.com/camel-tooling/camel-dashboard-openshift-all/refs/heads/main/icons/logo.png
 home: https://camel-tooling.github.io/camel-dashboard/
 sources:
   - https://github.com/camel-tooling/camel-dashboard
