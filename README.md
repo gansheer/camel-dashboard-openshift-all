@@ -17,7 +17,7 @@ This Helm chart follows a versioning scheme aligned with OpenShift versions:
 
 ## Prerequisites
 
-- OpenShift 4.19
+- OpenShift 4.20
 
 ## Installation procedure
 
