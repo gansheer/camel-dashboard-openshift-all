@@ -52,12 +52,19 @@ helm-check: helm
 #
 #=== Calls: helm
 #
+#* PARAMETERS:
+#** CUSTOM_VERSION:   Sets a custom version to override Chart.yaml version
 #
 #---
 helm-release: helm
 	@echo "####### Building helm chart ..."
 	helm dependency update
+ifdef CUSTOM_VERSION
+	@echo "Using custom version: $(CUSTOM_VERSION)"
+	helm package . --version $(CUSTOM_VERSION)
+else
 	helm package .
+endif
 
 
 .PHONY: helm-release
