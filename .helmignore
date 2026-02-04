@@ -23,3 +23,4 @@
 # Note: Do NOT ignore charts/*.tgz as they contain our dependencies
 Makefile
 camel-dashboard-openshift-all-*
+.github/
