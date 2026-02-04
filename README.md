@@ -2,15 +2,22 @@
 
 Camel Dashboard All-in-One Helm Chart for Openshift
 
-
 This is an umbrella Helm chart that deploys the complete Camel Dashboard solution, including:
 - **Camel Dashboard Operator**: Manages Camel Dashboard instances
 - **Camel Dashboard Console**: OpenShift Console plugin for Camel Dashboard
 - **Hawtio Online Console Plugin**: Management and monitoring console for Java applications
 
+## Version Compatibility
+
+This Helm chart follows a versioning scheme aligned with OpenShift versions:
+- **Chart version X.Y.Z** is compatible with **OpenShift X.Y**
+- The patch version (Z) indicates chart-specific updates that don't change OCP compatibility
+
+**Note**: Always use the latest patch version of the chart for your OpenShift version.
+
 ## Prerequisites
 
-- OpenShift 4.19+
+- OpenShift 4.19
 
 ## Installation procedure
 
