@@ -22,7 +22,7 @@ This is an umbrella Helm chart that deploys the complete Camel Dashboard solutio
 
 - Kubernetes
 - Helm
-- OpenShift 4.19+
+- OpenShift 4.20+
 
 ## Installation
 
