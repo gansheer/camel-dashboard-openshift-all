@@ -33,7 +33,7 @@ dependencies:
     repository: "https://camel-tooling.github.io/camel-dashboard/charts"
     condition: camel-dashboard-operator.enabled
   - name: camel-dashboard-console
-    version: "0.3.1"
+    version: "0.3.2"
     repository: "https://camel-tooling.github.io/camel-dashboard/charts"
     condition: camel-dashboard-console.enabled
   - name: hawtio-online-console-plugin
