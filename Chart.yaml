@@ -2,7 +2,7 @@ apiVersion: v2
 name: camel-dashboard-openshift-all
 description: Helm umbrella chart for Camel Dashboard on OpenShift
 type: application
-version: 4.20.0
+version: 4.20.1
 # follows https://github.com/opdev/getocprange/blob/main/kubeOpenShiftVersionMap.yaml
 kubeVersion: ">= 1.33"
 # to change before releasing
