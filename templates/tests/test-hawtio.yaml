@@ -1,0 +1,74 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ .Release.Name }}-test-hawtio"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: {{ .Chart.Name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: hawtio-test
+    helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+  annotations:
+    "helm.sh/hook": test
+    "helm.sh/hook-weight": "4"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+    seccomp.security.alpha.kubernetes.io/pod: runtime/default
+spec:
+  securityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+  - name: test-hawtio
+    image: registry.access.redhat.com/ubi9/ubi-minimal:9.4
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      runAsNonRoot: true
+      readOnlyRootFilesystem: true
+    command: ['sh', '-c']
+    args:
+    - |
+      if [ "{{ index .Values "hawtio-online-console-plugin" "enabled" }}" = "true" ]; then
+        set -e
+        echo "========================================="
+        echo "Testing Hawtio Online Console Plugin"
+        echo "========================================="
+
+        # Check if hawtio plugin service is reachable
+        echo "Checking hawtio plugin service..."
+        SERVICE_NAME="{{ index .Values "hawtio-online-console-plugin" "plugin" "name" | default "hawtio-online-console-plugin" }}"
+        SERVICE_PORT="{{ index .Values "hawtio-online-console-plugin" "plugin" "service" "port" | default 9443 }}"
+
+        if ! curl -k -v --fail --connect-timeout 5 --retry 0 \
+          https://${SERVICE_NAME}.{{ .Release.Namespace }}.svc.cluster.local:${SERVICE_PORT} \
+          2>&1 | grep -q "200\|Connected\|SSL"; then
+          echo "✗ FAIL: Hawtio plugin service is not reachable at ${SERVICE_NAME}:${SERVICE_PORT}"
+          exit 1
+        fi
+        echo "✓ Hawtio plugin service is reachable at ${SERVICE_NAME}:${SERVICE_PORT}"
+
+        # Check gateway service
+        echo ""
+        echo "Checking hawtio gateway service..."
+        GATEWAY_SERVICE="${SERVICE_NAME}-gateway"
+        GATEWAY_PORT="{{ index .Values "hawtio-online-console-plugin" "gateway" "service" "port" | default 8443 }}"
+
+        if ! curl -k -v --fail --connect-timeout 5 --retry 0 \
+          https://${GATEWAY_SERVICE}.{{ .Release.Namespace }}.svc.cluster.local:${GATEWAY_PORT} \
+          2>&1 | grep -q "200\|Connected\|SSL"; then
+          echo "✗ FAIL: Hawtio gateway service is not reachable at ${GATEWAY_SERVICE}:${GATEWAY_PORT}"
+          exit 1
+        fi
+        echo "✓ Hawtio gateway service is reachable at ${GATEWAY_SERVICE}:${GATEWAY_PORT}"
+
+        echo ""
+        echo "========================================="
+        echo "Hawtio plugin test: PASSED"
+        echo "========================================="
+      else
+        echo "Hawtio Online Console Plugin is disabled - skipping test"
+      fi
+  restartPolicy: Never
