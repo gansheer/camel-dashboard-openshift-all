@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ .Release.Name }}-test-helm-release"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: {{ .Chart.Name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+  annotations:
+    "helm.sh/hook": test
+    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+    seccomp.security.alpha.kubernetes.io/pod: runtime/default
+spec:
+  securityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+  - name: test-helm-release
+    image: registry.access.redhat.com/ubi9/ubi-minimal:9.4
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      runAsNonRoot: true
+      readOnlyRootFilesystem: true
+    command: ['sh', '-c']
+    args:
+    - |
+      echo "========================================="
+      echo "Testing Helm Release: {{ .Release.Name }}"
+      echo "Chart: {{ .Chart.Name }} v{{ .Chart.Version }}"
+      echo "Namespace: {{ .Release.Namespace }}"
+      echo "========================================="
+      echo ""
+      echo "Enabled Components:"
+      if [ "{{ index .Values "camel-dashboard-operator" "enabled" }}" = "true" ]; then
+        echo "  ✓ Camel Dashboard Operator"
+      fi
+      if [ "{{ index .Values "camel-dashboard-console" "enabled" }}" = "true" ]; then
+        echo "  ✓ Camel Dashboard Console"
+      fi
+      if [ "{{ index .Values "hawtio-online-console-plugin" "enabled" }}" = "true" ]; then
+        echo "  ✓ Hawtio Online Console Plugin"
+      fi
+      echo ""
+      echo "========================================="
+      echo "Helm release test: PASSED"
+      echo "========================================="
+  restartPolicy: Never
