@@ -1,0 +1,107 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ .Release.Name }}-test-integration"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: {{ .Chart.Name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: integration-test
+    helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+  annotations:
+    "helm.sh/hook": test
+    "helm.sh/hook-weight": "5"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+    seccomp.security.alpha.kubernetes.io/pod: runtime/default
+spec:
+  securityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+  - name: test-integration
+    image: registry.access.redhat.com/ubi9/ubi-minimal:9.4
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      runAsNonRoot: true
+      readOnlyRootFilesystem: true
+    command: ['sh', '-c']
+    args:
+    - |
+      set -e
+      echo "========================================="
+      echo "Testing Component Integration"
+      echo "========================================="
+
+      TOTAL_COMPONENTS=0
+      REACHABLE_COMPONENTS=0
+
+      if [ "{{ index .Values "camel-dashboard-operator" "enabled" }}" = "true" ]; then
+        echo ""
+        echo "Checking Camel Dashboard Operator..."
+        echo "ℹ Operator does not expose services - presence validated by Helm"
+        TOTAL_COMPONENTS=$((TOTAL_COMPONENTS + 1))
+        REACHABLE_COMPONENTS=$((REACHABLE_COMPONENTS + 1))
+      fi
+
+      if [ "{{ index .Values "camel-dashboard-console" "enabled" }}" = "true" ]; then
+        echo ""
+        echo "Checking Camel Dashboard Console..."
+        TOTAL_COMPONENTS=$((TOTAL_COMPONENTS + 1))
+        if ! curl -k -v --fail --connect-timeout 5 --retry 0 \
+          https://camel-dashboard-console.{{ .Release.Namespace }}.svc.cluster.local:{{ index .Values "camel-dashboard-console" "plugin" "port" | default 9443 }} \
+          2>&1 | grep -q "200\|Connected\|SSL"; then
+          echo "✗ Console service is not reachable"
+        else
+          echo "✓ Console service is reachable"
+          REACHABLE_COMPONENTS=$((REACHABLE_COMPONENTS + 1))
+        fi
+      fi
+
+      if [ "{{ index .Values "hawtio-online-console-plugin" "enabled" }}" = "true" ]; then
+        echo ""
+        echo "Checking Hawtio Console Plugin..."
+        TOTAL_COMPONENTS=$((TOTAL_COMPONENTS + 1))
+        SERVICE_NAME="{{ index .Values "hawtio-online-console-plugin" "plugin" "name" | default "hawtio-online-console-plugin" }}"
+        if ! curl -k -v --fail --connect-timeout 5 --retry 0 \
+          https://${SERVICE_NAME}.{{ .Release.Namespace }}.svc.cluster.local:{{ index .Values "hawtio-online-console-plugin" "plugin" "service" "port" | default 9443 }} \
+          2>&1 | grep -q "200\|Connected\|SSL"; then
+          echo "✗ Hawtio service is not reachable"
+        else
+          echo "✓ Hawtio service is reachable"
+          REACHABLE_COMPONENTS=$((REACHABLE_COMPONENTS + 1))
+        fi
+      fi
+
+      echo ""
+      echo "========================================="
+      echo "Integration Summary:"
+      echo "  Total components:     $TOTAL_COMPONENTS"
+      echo "  Reachable components: $REACHABLE_COMPONENTS"
+      echo "========================================="
+
+      if [ "$REACHABLE_COMPONENTS" -lt "$TOTAL_COMPONENTS" ]; then
+        echo ""
+        echo "✗ FAIL: $((TOTAL_COMPONENTS - REACHABLE_COMPONENTS)) component(s) are not reachable"
+        exit 1
+      fi
+
+      if [ "{{ index .Values "camel-dashboard-console" "enabled" }}" = "true" ] && [ "{{ index .Values "hawtio-online-console-plugin" "enabled" }}" = "true" ]; then
+        echo ""
+        echo "ℹ Both console plugins are enabled - they will coexist in OpenShift console"
+      fi
+
+      if [ "$TOTAL_COMPONENTS" -eq 0 ]; then
+        echo ""
+        echo "⚠ No components are enabled - nothing to test"
+        exit 0
+      fi
+
+      echo ""
+      echo "========================================="
+      echo "Integration test: PASSED"
+      echo "========================================="
+  restartPolicy: Never

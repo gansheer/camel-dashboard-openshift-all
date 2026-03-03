@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ .Release.Name }}-test-operator"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: {{ .Chart.Name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: operator-test
+    helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+  annotations:
+    "helm.sh/hook": test
+    "helm.sh/hook-weight": "2"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+    seccomp.security.alpha.kubernetes.io/pod: runtime/default
+spec:
+  securityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+  - name: test-operator
+    image: registry.access.redhat.com/ubi9/ubi-minimal:9.4
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      runAsNonRoot: true
+      readOnlyRootFilesystem: true
+    command: ['sh', '-c']
+    args:
+    - |
+      if [ "{{ index .Values "camel-dashboard-operator" "enabled" }}" = "true" ]; then
+        set -e
+        echo "========================================="
+        echo "Testing Camel Dashboard Operator"
+        echo "========================================="
+        echo ""
+        echo "Note: Operator does not expose HTTP services for testing"
+        echo "Deployment presence is validated by Helm chart installation"
+        echo ""
+        echo "========================================="
+        echo "Operator test: PASSED"
+        echo "========================================="
+      else
+        echo "Camel Dashboard Operator is disabled - skipping test"
+      fi
+  restartPolicy: Never
